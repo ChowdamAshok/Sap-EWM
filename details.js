@@ -67,7 +67,7 @@ const DETAILS = [
       "Storage location not entered: there is no storage data, so MIGO cannot post.",
     ],
     q: [
-      "Which material type does the notes' Potato use?",
+      "Which material type do the notes use for this material?",
       ["FERT", "ROH", "HAWA"],
       1,
     ],
