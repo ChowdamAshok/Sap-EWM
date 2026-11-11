@@ -26,6 +26,7 @@ STEPS.forEach((s, i) => {
   b.textContent = s.t;
   b.onclick = () => {
     stop();
+    openMenu(false);
     go(s.first);
   };
   $("steps").append(b);
@@ -47,7 +48,6 @@ function build(si) {
     d.innerHTML = `<span class="e">${z.e}</span>${z.n}`;
     d.onclick = () => {
       $("info").textContent = z.n + ": " + z.i;
-      answer(k, d);
     };
     $("map").append(d);
   }
@@ -55,6 +55,7 @@ function build(si) {
     .map((x) => `<li><label><input type="checkbox"> ${x}</label></li>`)
     .join("");
   renderTab();
+  $("mstep").textContent = si + 1 + " / " + STEPS.length;
   $("phase").textContent = s.g;
   $("title").textContent = s.t;
   $("desc").textContent = s.d;
@@ -188,19 +189,14 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ---------- Practice mode, tabs, quiz ----------
-let practice = false,
-  pending = null,
-  ok = 0,
-  miss = 0,
+let ready = false,
   tab = "why",
   quiz = {};
 try {
   quiz = JSON.parse(localStorage.getItem("ewm_quiz") || "{}");
 } catch (e) {}
 function score() {
-  $("score").textContent =
-    `Quiz ${doneCount()}/${STEPS.length}` +
-    (practice ? ` | Practice: ${ok} right, ${miss} wrong` : "");
+  $("score").textContent = `Quiz ${doneCount()}/${STEPS.length}`;
   STEPS.forEach((st, k) => {
     $("s" + k).textContent =
       (quiz[k] !== undefined && quiz[k] === DETAILS[k].q[2] ? "✔ " : "") + st.t;
@@ -208,59 +204,10 @@ function score() {
 }
 function go(i) {
   i = Math.max(0, Math.min(FLAT.length - 1, i));
-  pending = null;
-  const f = FLAT[i];
-  if (!practice || f.m[0] === f.m[1]) {
-    show(i);
-    score();
-    return;
-  }
-  if (f.si !== curStep) build(f.si);
-  idx = i;
-  pending = { to: f.m[1], i };
-  const zf = zones[f.m[0]],
-    tok = $("token");
-  tok.style.transition = "none";
-  tok.style.left = zf.x + "%";
-  tok.style.top = zf.y + "%";
-  tok.textContent = f.m[2];
-  $("line").style.display = "none";
-  document
-    .querySelectorAll(".zone")
-    .forEach((z) => z.classList.remove("src", "dst"));
-  $("z_" + f.m[0]).classList.add("src");
-  $("from").textContent = zf.n;
-  $("to").textContent = "?";
-  $("say").textContent =
-    "Practice: where does this go next? Click the correct place on the map.";
-  $("prev").disabled = i === 0;
-  $("next").disabled = false;
+  show(i);
   score();
+  focusView();
 }
-function answer(k, d) {
-  if (!pending) return;
-  if (k === pending.to) {
-    const i = pending.i;
-    pending = null;
-    ok++;
-    show(i);
-    score();
-  } else {
-    miss++;
-    d.classList.add("wrong");
-    setTimeout(() => d.classList.remove("wrong"), 500);
-    $("say").textContent =
-      "Not that one. Read the step description and try again.";
-    score();
-  }
-}
-$("practice").onclick = () => {
-  practice = !practice;
-  stop();
-  $("practice").classList.toggle("on", practice);
-  $("practice").textContent = practice ? "Practice mode: on" : "Practice mode";
-  go(Math.max(idx, 0));
-};
 document.querySelectorAll(".tabs button").forEach(
   (b) =>
     (b.onclick = () => {
@@ -333,4 +280,22 @@ function doneCount() {
     (k) => DETAILS[k] && quiz[k] === DETAILS[k].q[2],
   ).length;
 }
+
+// ---------- Mobile: menu and scroll to the map after each action ----------
+function focusView() {
+  if (ready && window.matchMedia("(max-width:860px)").matches)
+    $("move").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function openMenu(o) {
+  document.body.classList.toggle("menu-open", o);
+  $("menu").setAttribute("aria-expanded", o);
+}
+$("menu").onclick = () =>
+  openMenu(!document.body.classList.contains("menu-open"));
+$("overlay").onclick = () => openMenu(false);
+$("closeMenu").onclick = () => openMenu(false);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") openMenu(false);
+});
 go(0);
+ready = true;
