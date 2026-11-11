@@ -66,7 +66,8 @@ function build(si) {
   $("s" + si).scrollIntoView({ block: "nearest" });
 }
 function stockAt(i) {
-  const st = { p1000: 0, p5000: 0, gr: 0, bin: 0, pack: 0, truck: 0, cust: 0 };
+  const st = {};
+  Object.keys(STOCK).forEach((k) => (st[k] = 0));
   for (let k = 0; k <= i; k++) {
     const d = FLAT[k].m[5];
     if (d) for (const x in d) st[x] += d[x];
@@ -131,6 +132,9 @@ function show(i) {
     .map((x) => `<li>${x.m[4]}</li>`)
     .join("");
   $("log").scrollTop = 1e5;
+  $("stocknote").textContent = f.m[5]
+    ? "Stock changed in this action."
+    : "No stock change here. This action only creates or checks a document.";
   // progress
   for (let k = 0; k < STEPS.length; k++)
     $("s" + k).classList.toggle("done", k < f.si);
