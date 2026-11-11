@@ -11,13 +11,17 @@
 </head>
 
 <body>
+    <div class="mbar"><button id="menu" aria-label="Open topics" aria-expanded="false">☰</button><b>SAP EWM
+            simulator</b><span id="mstep"></span></div>
+    <div id="overlay" class="overlay"></div>
     <header class="top">
         <h1>SAP S/4HANA EWM: live simulator</h1>
         <p>Press <b>Next action</b> and watch each document and pallet move from one place to another. Click any place
             on the map to learn what it is.</p>
     </header>
     <main class="layout">
-        <nav id="steps" class="steps" aria-label="Process steps"></nav>
+        <nav id="steps" class="steps" aria-label="Process steps"><button id="closeMenu" class="closeMenu">✕ Close
+                topics</button></nav>
         <section class="panel">
             <span id="phase" class="phase"></span>
             <h2 id="title"></h2>
@@ -46,7 +50,6 @@
                 <button id="prev">◀ Back</button>
                 <button id="next" class="primary">Next action ▶</button>
                 <button id="auto">Auto play</button>
-                <button id="practice">Practice mode</button>
                 <label class="speed">Speed <input type="range" id="speed" min="1" max="4" value="2"></label>
                 <span id="count" class="count"></span><span id="score" class="count"></span>
             </div>
