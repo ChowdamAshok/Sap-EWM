@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SAP S/4HANA EWM – Live Warehouse Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="top">
+        <h1>SAP S/4HANA EWM: live simulator</h1>
+        <p>Press <b>Next action</b> and watch each document and pallet move from one place to another. Click any place
+            on the map to learn what it is.</p>
+    </header>
+    <main class="layout">
+        <nav id="steps" class="steps" aria-label="Process steps"></nav>
+        <section class="panel">
+            <span id="phase" class="phase"></span>
+            <h2 id="title"></h2>
+            <p id="desc"></p>
+            <p class="tcode">T-code / path: <b id="tcode"></b></p>
+
+            <div class="move" id="move"><span id="from">-</span><em>moves to</em><span id="to">-</span></div>
+            <div class="map" id="map">
+                <svg id="svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line id="line" x1="0" y1="0" x2="0" y2="0" />
+                </svg>
+                <div class="token" id="token">📦</div>
+            </div>
+            <p id="say" class="say"></p>
+            <p id="info" class="info">Click a place on the map to see what it does.</p>
+            <div class="fields">
+                <h3>What to enter (from your class notes)</h3>
+                <ul id="fields"></ul>
+            </div>
+
+            <div class="tabs"><button data-t="why">Why it matters</button><button data-t="err">Common
+                    errors</button><button data-t="quiz">Quick quiz</button></div>
+            <div id="tabbody" class="tabbody"></div>
+
+            <div class="controls">
+                <button id="prev">◀ Back</button>
+                <button id="next" class="primary">Next action ▶</button>
+                <button id="auto">Auto play</button>
+                <button id="practice">Practice mode</button>
+                <label class="speed">Speed <input type="range" id="speed" min="1" max="4" value="2"></label>
+                <span id="count" class="count"></span><span id="score" class="count"></span>
+            </div>
+            <div class="bar"><i id="bar"></i></div>
+
+            <div class="cols">
+                <div>
+                    <h3>Live stock</h3>
+                    <table id="stock"></table>
+                </div>
+                <div>
+                    <h3>Document flow</h3>
+                    <ol id="log" class="log"></ol>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="steps.js"></script>
+    <script src="details.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
