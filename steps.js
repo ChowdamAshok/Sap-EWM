@@ -349,9 +349,9 @@ const STEPS = [
     g: "2. Master data",
     t: "Create material master",
     tc: "MM01",
-    d: "The material master is the product record. Your example material is Potato, raw material (ROH).",
+    d: "The material master is the product record. Your example material is BMW Spare Parts, material type ROH as in your notes.",
     f: [
-      "Industry M Mechanical, type ROH. Plant " +
+      "Description: BMW Spare Parts. Industry M Mechanical, type ROH. Plant " +
         C +
         ", sales org " +
         C +
@@ -365,7 +365,7 @@ const STEPS = [
     ],
     z: {
       u: Z(12, 50, "You (MM01)", "🧑‍💻", "Creates the material."),
-      mat: Z(48, 50, "Material: Potato", "🥔", "Material master record."),
+      mat: Z(48, 50, "BMW Spare Parts", "🔧", "Material master record."),
       pl: Z(86, 22, "Plant " + C, "🏭", "Plant views."),
       sl: Z(86, 78, "SLoc 1000", "🗄️", "Storage view."),
     },
@@ -556,7 +556,7 @@ const STEPS = [
       "Repeat the same for storage location 6000",
     ],
     z: {
-      m1: Z(14, 50, "Material (SLoc 1000)", "🥔", "Existing material."),
+      m1: Z(14, 50, "BMW Spare Parts (SLoc 1000)", "🔧", "Existing material."),
       p5: Z(74, 22, "SLoc 5000", "🗄️", "EWM-managed storage location."),
       p6: Z(74, 78, "SLoc 6000", "🗄️", "Second storage location."),
     },
@@ -975,4 +975,3 @@ const STEPS = [
     ],
   },
 ];
-
