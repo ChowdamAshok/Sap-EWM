@@ -49,21 +49,19 @@ const FLOOR = {
   customer: Z(9, 85, "Customer", "🛒", "The buyer who receives the goods."),
 };
 const STOCK = {
-  p1000: "ERP: Plant 1000 / SLoc 1000",
-  p5000: "ERP: Plant 5000",
+  s1000: "MMBE: SLoc 1000 stock",
+  s5000: "MMBE: SLoc 5000 stock",
+  s6000: "MMBE: SLoc 6000 stock",
+  po: "Open PO qty (ordered, not stock)",
+  ibd: "Inbound delivery qty (expected)",
+  so: "Open sales order qty",
+  dlv: "Outbound delivery qty (to ship)",
   gr: "EWM: GR zone",
   bin: "EWM: Storage bin",
-  pack: "EWM: Pick & pack",
-  truck: "GI zone / truck",
-  cust: "Delivered to customer",
+  gi: "EWM: GI zone",
+  cust: "Issued to customer",
 };
-const ZSTOCK = {
-  gr: "gr",
-  bins: "bin",
-  pack: "pack",
-  door_out: "truck",
-  customer: "cust",
-};
+const ZSTOCK = { gr: "gr", bins: "bin", door_out: "gi", customer: "cust" };
 const NM = Z(
   12,
   50,
@@ -495,10 +493,10 @@ const STEPS = [
     ],
   },
   {
-    g: "3. Procurement (plant 1000)",
+    g: "3. Procurement (SLoc 1000)",
     t: "Purchase order and goods receipt in SLoc 1000",
     tc: "ME21N, MIGO, OB72, OBB5, MMBE",
-    d: "Order from BMWIVend, then post the goods receipt. If MIGO complains about a global company code, create and assign it (OB72, OBB5).",
+    d: "Order from BMWIVend, then post the goods receipt. The PO does not add stock; only the goods receipt does. If MIGO complains about a global company code, create and assign it (OB72, OBB5).",
     f: [
       "ME21N: supplier BMWIVend, purch. org " +
         C +
@@ -517,6 +515,7 @@ const STEPS = [
         "📨",
         "ME21N: PO to BMWIVend, plant " + C + ", SLoc 1000, PBXX price 10.",
         "PO created (100 pcs, SLoc 1000)",
+        { po: 100 },
       ],
       [
         "vendor",
@@ -530,8 +529,8 @@ const STEPS = [
         "erp",
         "📥",
         "MIGO: Goods Receipt → Purchase Order → item OK → Post.",
-        "GR 101 posted: +100 in Plant 1000 / SLoc 1000",
-        { p1000: 100 },
+        "GR 101 posted: +100 in SLoc 1000 (plant " + C + ")",
+        { s1000: 100, po: -100 },
       ],
       [
         "erp",
@@ -543,41 +542,43 @@ const STEPS = [
     ],
   },
   {
-    g: "4. Extend to new plants",
-    t: "Extend material to plants 5000 and 6000",
+    g: "4. Extend to storage locations",
+    t: "Extend material to storage locations 5000 and 6000",
     tc: "MM01",
-    d: "Same material, new plants. Enter the existing material number and add the plant views.",
+    d: "Same material and same plant, new storage locations. Enter the existing material number and add storage data.",
     f: [
       "Material number (existing), industry M, type ROH, continue",
-      "Plant 5000, sales org " +
+      "Plant " +
+        C +
+        ", storage location 5000, sales org " +
         C +
         ", distribution channel 01. Enter and save",
-      "Repeat the same for plant 6000",
+      "Repeat the same for storage location 6000",
     ],
     z: {
-      m1: Z(14, 50, "Material (plant 1000)", "🥔", "Existing material."),
-      p5: Z(74, 22, "Plant 5000", "🏭", "EWM plant."),
-      p6: Z(74, 78, "Plant 6000", "🏭", "Second plant."),
+      m1: Z(14, 50, "Material (SLoc 1000)", "🥔", "Existing material."),
+      p5: Z(74, 22, "SLoc 5000", "🗄️", "EWM-managed storage location."),
+      p6: Z(74, 78, "SLoc 6000", "🗄️", "Second storage location."),
     },
     m: [
       [
         "m1",
         "p5",
         "➕",
-        "Extend to plant 5000 and save.",
-        "Material extended to 5000",
+        "Extend to storage location 5000 and save.",
+        "Material extended to SLoc 5000",
       ],
       [
         "m1",
         "p6",
         "➕",
-        "Extend to plant 6000 and save.",
-        "Material extended to 6000",
+        "Extend to storage location 6000 and save.",
+        "Material extended to SLoc 6000",
       ],
     ],
   },
   {
-    g: "4. Extend to new plants",
+    g: "4. Extend to storage locations",
     t: "Business partner for PED and supply chain unit",
     tc: "BP, then SCM Extended Warehouse Management → Master Data",
     d: "PED is a vendor-type partner used for the warehouse. The supply chain unit (SCU) represents the warehouse site in EWM.",
@@ -635,7 +636,8 @@ const STEPS = [
         ", logical system for EWM, run the LHA model, all OK",
       "BD64 → LHA model → logical system for the EWM client → add Inbound delivery and Delivery change → receiver determination → filter on warehouse number",
       "Basic setup → Shipping → Configure global shipping: shipping point and goods receipt point",
-      "Assign shipping point: copy for plants 5000, 6000; change NMEG to " + C,
+      "Assign shipping point: copy the 5000 and 6000 entries; change NMEG to " +
+        C,
     ],
     z: {
       erp: Z(14, 50, "ERP", "🖥️", "Sends deliveries."),
@@ -674,7 +676,7 @@ const STEPS = [
         "erp",
         "erp",
         "🚚",
-        "Assign shipping points to plants 5000 and 6000.",
+        "Assign shipping points (5000 and 6000 entries).",
         "Shipping points assigned",
       ],
     ],
@@ -774,10 +776,10 @@ const STEPS = [
     ],
   },
   {
-    g: "6. Inbound (plant 5000)",
-    t: "Purchase order for plant 5000",
+    g: "6. Inbound (SLoc 5000)",
+    t: "Purchase order for storage location 5000",
     tc: "ME21N, MMBE",
-    d: "Same as before, but the receiving plant is 5000 and the storage location is 5000.",
+    d: "Same as before, but the storage location is 5000, which is managed by EWM. A PO does not add stock, it only creates an open order quantity.",
     f: [
       "Supplier BMWIVend, purch. org " + C + ", group 001, company code " + C,
       "Material, quantity, plant, storage location 5000, confirmation control 0004",
@@ -788,16 +790,17 @@ const STEPS = [
         "erp",
         "vendor",
         "📨",
-        "ME21N: PO for plant 5000, SLoc 5000.",
-        "PO created (plant 5000)",
+        "ME21N: PO for plant " + C + ", SLoc 5000, 100 pcs.",
+        "PO created (100 pcs, SLoc 5000)",
+        { po: 100 },
       ],
     ],
   },
   {
-    g: "6. Inbound (plant 5000)",
+    g: "6. Inbound (SLoc 5000)",
     t: "Inbound delivery",
     tc: "VL31N, SMQ2",
-    d: "Create the inbound delivery with the PO number. It travels to EWM through a queue, so check SMQ2 for errors.",
+    d: "Create the inbound delivery with the PO number. It travels to EWM through a queue, so check SMQ2 for errors. It does not add stock; stock is added only at goods receipt.",
     f: [
       "VL31N: enter vendor and purchase order number",
       "Check data and Save",
@@ -810,6 +813,7 @@ const STEPS = [
         "📄",
         "VL31N: enter PO number, check data, save.",
         "Inbound delivery created (ERP)",
+        { ibd: 100 },
       ],
       [
         "erp",
@@ -821,7 +825,7 @@ const STEPS = [
     ],
   },
   {
-    g: "6. Inbound (plant 5000)",
+    g: "6. Inbound (SLoc 5000)",
     t: "Unload, goods receipt and putaway",
     tc: "Warehouse Management Monitor",
     d: "In the monitor, open the inbound delivery, unload, post goods receipt, then create and confirm the putaway task.",
@@ -841,16 +845,15 @@ const STEPS = [
         "gr",
         "📦",
         "Monitor: click Unload.",
-        "Unloaded to GR zone",
-        { gr: 100 },
+        "Unloaded at the door (no stock posted yet)",
       ],
       [
         "gr",
         "erp",
         "📄",
-        "Monitor: click Goods Receipt. ERP stock updates.",
-        "GR posted: +100 plant 5000",
-        { p5000: 100 },
+        "Monitor: click Goods Receipt. Stock is now posted in EWM (GR zone) and in ERP (SLoc 5000).",
+        "GR posted: +100 in SLoc 5000",
+        { s5000: 100, po: -100, ibd: -100, gr: 100 },
       ],
       [
         "ewm",
@@ -887,6 +890,7 @@ const STEPS = [
         "🛒",
         "VA01: OR order, sold-to BMWICust, 40 pcs.",
         "Sales order created (40 pcs)",
+        { so: 40 },
       ],
       [
         "erp",
@@ -914,6 +918,7 @@ const STEPS = [
         "🚚",
         "VL01N: shipping point, order number, save.",
         "Outbound delivery created (ERP)",
+        { so: -40, dlv: 40 },
       ],
       [
         "erp",
@@ -950,15 +955,15 @@ const STEPS = [
         "🖐️",
         "Confirm warehouse order. Goods move bin → GI zone. Picking Completed.",
         "Picking completed",
-        { bin: -40, truck: 40 },
+        { bin: -40, gi: 40 },
       ],
       [
         "door_out",
         "erp",
         "📄",
         "Goods Issue Completed. ERP stock reduces.",
-        "GI posted: -40 plant 5000",
-        { p5000: -40 },
+        "GI posted: -40 in SLoc 5000",
+        { s5000: -40, gi: -40, dlv: -40, cust: 40 },
       ],
       [
         "door_out",
@@ -966,7 +971,6 @@ const STEPS = [
         "🚚",
         "Goods leave for the customer. Check SMQ2 and MMBE.",
         "Delivered to customer",
-        { truck: -40, cust: 40 },
       ],
     ],
   },
