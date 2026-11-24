@@ -299,3 +299,4 @@ document.addEventListener("keydown", (e) => {
 });
 go(0);
 ready = true;
+
