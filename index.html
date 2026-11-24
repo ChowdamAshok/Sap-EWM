@@ -4,20 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SAP S/4HANA EWM – Live Warehouse Simulator</title>
+    <title>EWM Quest – SAP S/4HANA Warehouse Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="game.css">
 </head>
 
-<body>
-    <div class="mbar"><button id="menu" aria-label="Open topics" aria-expanded="false">☰</button><b>SAP EWM
-            simulator</b><span id="mstep"></span></div>
+<body class="loading">
+    <div id="loader">
+        <div class="ld-in">
+            <div class="ld-logo">EWM <span>QUEST</span></div>
+            <p>Run a full SAP S/4HANA warehouse, from company setup to goods issue.</p>
+            <div class="ld-track">
+                <div class="ld-fl"></div><i id="ldbar"></i>
+            </div>
+            <p id="ldtip" class="ld-tip">Loading warehouse…</p>
+            <button id="start" hidden>▶ Start shift</button>
+        </div>
+    </div>
+    <div class="mbar"><button id="menu" aria-label="Open topics" aria-expanded="false">☰</button><b>EWM Quest</b><span
+            id="mstep"></span></div>
     <div id="overlay" class="overlay"></div>
     <header class="top">
-        <h1>SAP S/4HANA EWM: live simulator</h1>
-        <p>Press <b>Next action</b> and watch each document and pallet move from one place to another. Click any place
-            on the map to learn what it is.</p>
+        <h1>EWM Quest: SAP S/4HANA warehouse game</h1>
+        <p>Press <b>Next action</b> and watch the forklift carry each pallet. Turn on <b>Drive mode</b> to drive it
+            yourself. Click any place on the map to learn what it is.</p>
     </header>
     <main class="layout">
         <nav id="steps" class="steps" aria-label="Process steps"><button id="closeMenu" class="closeMenu">✕ Close
@@ -69,8 +81,10 @@
         </section>
     </main>
     <script src="steps.js"></script>
+    <script src="steps-patch.js"></script>
     <script src="details.js"></script>
     <script src="script.js"></script>
+    <script src="game.js"></script>
 </body>
 
 </html>
